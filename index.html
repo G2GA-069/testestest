@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Test Page</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: monospace; background: #0f0f0f; color: #e0e0e0; padding: 2rem; min-height: 100vh; }
+  h1 { font-size: 13px; color: #666; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .card { border: 1px solid #252525; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; background: #161616; }
+  .label { font-size: 11px; color: #555; margin-bottom: 8px; }
+  .value { font-size: 14px; color: #e0e0e0; margin-bottom: 6px; }
+  .value strong { color: #fff; font-weight: 500; }
+  code { font-size: 11px; color: #aaa; background: #1e1e1e; padding: 2px 6px; border-radius: 3px; }
+  .colbox { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+  .bar-track { background: #1e1e1e; border-radius: 4px; height: 7px; margin: 5px 0 10px; }
+  .bar-fill { height: 7px; border-radius: 4px; transition: width 0.3s ease; }
+  .bar-label { font-size: 11px; color: #555; margin-bottom: 2px; display: flex; justify-content: space-between; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; background: #1e1e1e; color: #888; border: 1px solid #2a2a2a; }
+  .btn { margin-top: 1.5rem; padding: 7px 20px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #ccc; font-family: monospace; font-size: 12px; cursor: pointer; transition: background 0.15s; }
+  .btn:hover { background: #252525; color: #fff; }
+  .ts { color: #444; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Test Page</h1>
+<p class="ts">rendered at <span id="ts"></span></p>
+
+<div class="card">
+  <div class="label">random values</div>
+  <div class="value">number — <strong id="rnum"></strong></div>
+  <div class="value">uuid — <code id="uuid"></code></div>
+  <div class="value">
+    color — <span class="colbox" id="colbox"></span><code id="colhex"></code>
+  </div>
+</div>
+
+<div class="card">
+  <div class="label">random progress bars</div>
+  <div id="bars"></div>
+</div>
+
+<div class="card">
+  <div class="label">random tags</div>
+  <div class="tags" id="tags"></div>
+</div>
+
+<button class="btn" onclick="rerandom()">rerandomise</button>
+
+<script>
+const words = ['alpha','beta','gamma','delta','sigma','omega','zeta','kappa','lambda','theta','iota','phi','quanta','vector','tensor','matrix'];
+const barColors = ['#4a9eff','#4adf8a','#f5c842','#f56e6e'];
+const barNames = ['metric_A','metric_B','metric_C','metric_D'];
+
+function rHex(){ return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
+function rInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function rUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=='x'?r:(r&0x3|0x8)).toString(16)}); }
+
+function rerandom(){
+  document.getElementById('ts').textContent = new Date().toLocaleTimeString();
+  document.getElementById('rnum').textContent = rInt(1000,99999);
+  document.getElementById('uuid').textContent = rUUID();
+  const c = rHex();
+  document.getElementById('colbox').style.background = c;
+  document.getElementById('colhex').textContent = c;
+
+  const bars = document.getElementById('bars');
+  bars.innerHTML = '';
+  for(let i=0;i<4;i++){
+    const w = rInt(10,100);
+    bars.innerHTML += `
+      <div class="bar-label"><span>${barNames[i]}</span><span style="color:#666">${w}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${barColors[i]};"></div></div>`;
+  }
+
+  const tags = document.getElementById('tags');
+  tags.innerHTML = '';
+  const n = rInt(5,11);
+  for(let i=0;i<n;i++) tags.innerHTML += `<span class="tag">${words[rInt(0,words.length-1)]}_${rInt(1,99)}</span>`;
+}
+
+rerandom();
+</script>
+</body>
+</html>
