@@ -3,86 +3,584 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random Test Page</title>
+<title>fren :3</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: monospace; background: #0f0f0f; color: #e0e0e0; padding: 2rem; min-height: 100vh; }
-  h1 { font-size: 13px; color: #666; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .card { border: 1px solid #252525; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; background: #161616; }
-  .label { font-size: 11px; color: #555; margin-bottom: 8px; }
-  .value { font-size: 14px; color: #e0e0e0; margin-bottom: 6px; }
-  .value strong { color: #fff; font-weight: 500; }
-  code { font-size: 11px; color: #aaa; background: #1e1e1e; padding: 2px 6px; border-radius: 3px; }
-  .colbox { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
-  .bar-track { background: #1e1e1e; border-radius: 4px; height: 7px; margin: 5px 0 10px; }
-  .bar-fill { height: 7px; border-radius: 4px; transition: width 0.3s ease; }
-  .bar-label { font-size: 11px; color: #555; margin-bottom: 2px; display: flex; justify-content: space-between; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; background: #1e1e1e; color: #888; border: 1px solid #2a2a2a; }
-  .btn { margin-top: 1.5rem; padding: 7px 20px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #ccc; font-family: monospace; font-size: 12px; cursor: pointer; transition: background 0.15s; }
-  .btn:hover { background: #252525; color: #fff; }
-  .ts { color: #444; font-size: 11px; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #fce4ec, #f3e5f5, #e8eaf6, #e0f7fa, #fff3e0, #fce4ec);
+    background-size: 600% 600%;
+    animation: gradientShift 18s ease infinite;
+    font-family: 'Segoe UI', 'Comic Sans MS', cursive, sans-serif;
+    cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><text y='18' font-size='18'>♥</text></svg>") 12 12, auto;
+    user-select: none;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating bokeh background */
+  .bokeh {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.25;
+    pointer-events: none;
+    filter: blur(1px);
+    animation: floatBokeh linear infinite;
+  }
+
+  @keyframes floatBokeh {
+    0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+    10% { opacity: 0.25; }
+    90% { opacity: 0.25; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  /* Scene */
+  .scene {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+  }
+
+  /* Ground shadow */
+  .ground-shadow {
+    width: 180px;
+    height: 30px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    margin-top: -15px;
+    animation: shadowBounce 2s ease-in-out infinite;
+  }
+
+  @keyframes shadowBounce {
+    0%, 100% { transform: scaleX(1); opacity: 0.8; }
+    30% { transform: scaleX(0.85); opacity: 0.5; }
+    60% { transform: scaleX(1.08); opacity: 0.9; }
+  }
+
+  /* Character wrapper */
+  .character {
+    position: relative;
+    animation: bounce 2s ease-in-out infinite;
+    cursor: pointer;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) scaleX(1) scaleY(1); }
+    30% { transform: translateY(-18px) scaleX(0.96) scaleY(1.05); }
+    60% { transform: translateY(0) scaleX(1.04) scaleY(0.96); }
+  }
+
+  .character:hover {
+    animation: wiggle 0.4s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: translateY(-5px) rotate(0deg) scaleX(1.02); }
+    25% { transform: translateY(-10px) rotate(-4deg) scaleX(0.97) scaleY(1.04); }
+    50% { transform: translateY(-5px) rotate(0deg) scaleX(1.03) scaleY(0.97); }
+    75% { transform: translateY(-10px) rotate(4deg) scaleX(0.97) scaleY(1.04); }
+  }
+
+  /* Body */
+  .body {
+    width: 280px;
+    height: 260px;
+    background: #ffffff;
+    border-radius: 50% 50% 48% 48%;
+    position: relative;
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.08),
+      inset 0 -30px 50px rgba(240,220,230,0.15),
+      inset 0 10px 30px rgba(255,255,255,0.8),
+      0 0 80px rgba(255,200,220,0.15);
+    z-index: 2;
+  }
+
+  /* Ears - tiny round ears on top */
+  .ear {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: -15px;
+    box-shadow:
+      inset 0 -5px 15px rgba(240,200,210,0.2),
+      0 2px 10px rgba(0,0,0,0.05);
+    z-index: 1;
+  }
+  .ear.left { left: 30px; }
+  .ear.right { right: 30px; }
+
+  .ear-inner {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: rgba(255,180,190,0.35);
+    border-radius: 50%;
+    top: 12px;
+    left: 11px;
+  }
+
+  /* Eyes */
+  .eye {
+    position: absolute;
+    top: 75px;
+    width: 58px;
+    height: 58px;
+    z-index: 3;
+    animation: blink 4s ease-in-out infinite;
+  }
+  .eye.left { left: 60px; }
+  .eye.right { right: 60px; }
+
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95%, 97% { transform: scaleY(0.05); }
+  }
+
+  .eye svg { width: 100%; height: 100%; }
+
+  /* Sparkle in eyes */
+  .eye-sparkle {
+    animation: eyeSparkle 1.5s ease-in-out infinite;
+  }
+
+  @keyframes eyeSparkle {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 1; r: 6; }
+  }
+
+  /* Blush */
+  .blush {
+    position: absolute;
+    width: 42px;
+    height: 24px;
+    background: rgba(255, 150, 170, 0.4);
+    border-radius: 50%;
+    top: 135px;
+    filter: blur(4px);
+    z-index: 3;
+    animation: blushPulse 2.5s ease-in-out infinite;
+  }
+  .blush.left { left: 35px; }
+  .blush.right { right: 35px; }
+
+  .character:hover .blush {
+    background: rgba(255, 130, 160, 0.65);
+  }
+
+  @keyframes blushPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+  }
+
+  /* Mouth */
+  .mouth {
+    position: absolute;
+    top: 155px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    transition: transform 0.2s ease;
+  }
+
+  .character:hover .mouth {
+    transform: translateX(-50%) scaleX(1.3) scaleY(1.1);
+  }
+
+  /* Arms */
+  .arm {
+    position: absolute;
+    width: 55px;
+    height: 40px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: 160px;
+    z-index: 1;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05), inset 0 -5px 10px rgba(240,220,230,0.1);
+  }
+  .arm.left {
+    left: -20px;
+    animation: waveLeft 3s ease-in-out infinite;
+    transform-origin: right center;
+  }
+  .arm.right {
+    right: -20px;
+    animation: waveRight 3s ease-in-out infinite 0.5s;
+    transform-origin: left center;
+  }
+
+  @keyframes waveLeft {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(12deg); }
+  }
+  @keyframes waveRight {
+    0%, 100% { transform: rotate(5deg); }
+    50% { transform: rotate(-12deg); }
+  }
+
+  /* Feet */
+  .foot {
+    position: absolute;
+    width: 52px;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 50%;
+    bottom: -10px;
+    z-index: 1;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  .foot.left { left: 50px; }
+  .foot.right { right: 50px; }
+
+  /* Tail */
+  .tail {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #ffffff;
+    border-radius: 50%;
+    bottom: 30px;
+    right: -10px;
+    z-index: 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    animation: tailWag 1.5s ease-in-out infinite;
+    transform-origin: left center;
+  }
+
+  @keyframes tailWag {
+    0%, 100% { transform: rotate(-10deg) scale(1); }
+    50% { transform: rotate(15deg) scale(1.05); }
+  }
+
+  /* Label */
+  .label {
+    margin-top: 20px;
+    font-size: 22px;
+    color: rgba(180, 130, 160, 0.7);
+    letter-spacing: 4px;
+    font-weight: 300;
+    animation: labelPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes labelPulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* Particles container */
+  #particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .particle.heart {
+    font-size: 20px;
+    animation: floatUp 2.5s ease-out forwards;
+  }
+
+  .particle.sparkle {
+    width: 8px;
+    height: 8px;
+    animation: sparkleAnim 1.2s ease-out forwards;
+  }
+
+  .particle.sparkle::before,
+  .particle.sparkle::after {
+    content: '';
+    position: absolute;
+    background: currentColor;
+    border-radius: 2px;
+  }
+  .particle.sparkle::before {
+    width: 100%;
+    height: 30%;
+    top: 35%;
+    left: 0;
+  }
+  .particle.sparkle::after {
+    width: 30%;
+    height: 100%;
+    top: 0;
+    left: 35%;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-140px) scale(0.4) rotate(25deg); opacity: 0; }
+  }
+
+  @keyframes sparkleAnim {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    50% { transform: scale(1.5) rotate(90deg); opacity: 0.8; }
+    100% { transform: scale(0) rotate(180deg); opacity: 0; }
+  }
+
+  /* Squish on click */
+  .character.squish {
+    animation: squish 0.5s ease-out;
+  }
+
+  @keyframes squish {
+    0% { transform: scaleX(1) scaleY(1); }
+    20% { transform: scaleX(1.25) scaleY(0.7); }
+    40% { transform: scaleX(0.9) scaleY(1.15); }
+    60% { transform: scaleX(1.08) scaleY(0.93); }
+    80% { transform: scaleX(0.98) scaleY(1.03); }
+    100% { transform: scaleX(1) scaleY(1); }
+  }
+
+  /* Eye highlight tracking */
+  .eye-highlight-main, .eye-highlight-small {
+    transition: transform 0.15s ease-out;
+  }
+
+  /* Responsive */
+  @media (max-width: 500px) {
+    .character { transform-origin: center center; }
+    .body { width: 200px; height: 186px; }
+    .eye { width: 42px; height: 42px; top: 52px; }
+    .eye.left { left: 42px; }
+    .eye.right { right: 42px; }
+    .blush { top: 96px; width: 32px; height: 18px; }
+    .blush.left { left: 24px; }
+    .blush.right { right: 24px; }
+    .mouth { top: 110px; }
+    .arm { width: 40px; height: 30px; top: 115px; }
+    .foot { width: 38px; height: 24px; }
+    .foot.left { left: 34px; }
+    .foot.right { right: 34px; }
+    .ear { width: 36px; height: 36px; top: -10px; }
+    .ear.left { left: 20px; }
+    .ear.right { right: 20px; }
+    .ear-inner { width: 20px; height: 20px; top: 8px; left: 8px; }
+    .tail { width: 22px; height: 22px; }
+    .ground-shadow { width: 130px; }
+    .label { font-size: 18px; }
+  }
 </style>
 </head>
 <body>
 
-<h1>Test Page</h1>
-<p class="ts">rendered at <span id="ts"></span></p>
+<!-- Particle container -->
+<div id="particles"></div>
 
-<div class="card">
-  <div class="label">random values</div>
-  <div class="value">number — <strong id="rnum"></strong></div>
-  <div class="value">uuid — <code id="uuid"></code></div>
-  <div class="value">
-    color — <span class="colbox" id="colbox"></span><code id="colhex"></code>
+<div class="scene">
+  <div class="character" id="character">
+    <div class="body">
+      <!-- Ears -->
+      <div class="ear left"><div class="ear-inner"></div></div>
+      <div class="ear right"><div class="ear-inner"></div></div>
+
+      <!-- Eyes -->
+      <div class="eye left" id="eyeLeft">
+        <svg viewBox="0 0 58 58">
+          <defs>
+            <radialGradient id="eyeGrad" cx="50%" cy="45%" r="50%">
+              <stop offset="0%" stop-color="#1a1a2e"/>
+              <stop offset="100%" stop-color="#2d2d44"/>
+            </radialGradient>
+          </defs>
+          <circle cx="29" cy="29" r="27" fill="url(#eyeGrad)" stroke="none"/>
+          <ellipse class="eye-highlight-main" cx="20" cy="18" rx="9" ry="7" fill="white" opacity="0.95"/>
+          <circle class="eye-highlight-small eye-sparkle" cx="36" cy="36" r="5" fill="white" opacity="0.8"/>
+          <circle cx="14" cy="12" r="2.5" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="eye right" id="eyeRight">
+        <svg viewBox="0 0 58 58">
+          <circle cx="29" cy="29" r="27" fill="url(#eyeGrad)" stroke="none"/>
+          <ellipse class="eye-highlight-main" cx="20" cy="18" rx="9" ry="7" fill="white" opacity="0.95"/>
+          <circle class="eye-highlight-small eye-sparkle" cx="36" cy="36" r="5" fill="white" opacity="0.8"/>
+          <circle cx="14" cy="12" r="2.5" fill="white" opacity="0.4"/>
+        </svg>
+      </div>
+
+      <!-- Blush -->
+      <div class="blush left"></div>
+      <div class="blush right"></div>
+
+      <!-- Mouth - cat mouth w shape -->
+      <div class="mouth">
+        <svg width="30" height="14" viewBox="0 0 30 14">
+          <path d="M3,3 Q8,12 15,5 Q22,12 27,3" fill="none" stroke="#e8a0a8" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- Tail -->
+      <div class="tail"></div>
+    </div>
+
+    <!-- Arms -->
+    <div class="arm left"></div>
+    <div class="arm right"></div>
+
+    <!-- Feet -->
+    <div class="foot left"></div>
+    <div class="foot right"></div>
   </div>
-</div>
 
-<div class="card">
-  <div class="label">random progress bars</div>
-  <div id="bars"></div>
-</div>
+  <!-- Ground shadow -->
+  <div class="ground-shadow"></div>
 
-<div class="card">
-  <div class="label">random tags</div>
-  <div class="tags" id="tags"></div>
+  <!-- Label -->
+  <p class="label">hewwo ♡</p>
 </div>
-
-<button class="btn" onclick="rerandom()">rerandomise</button>
 
 <script>
-const words = ['alpha','beta','gamma','delta','sigma','omega','zeta','kappa','lambda','theta','iota','phi','quanta','vector','tensor','matrix'];
-const barColors = ['#4a9eff','#4adf8a','#f5c842','#f56e6e'];
-const barNames = ['metric_A','metric_B','metric_C','metric_D'];
+  const character = document.getElementById('character');
+  const particleContainer = document.getElementById('particles');
+  const eyeLeft = document.getElementById('eyeLeft');
+  const eyeRight = document.getElementById('eyeRight');
 
-function rHex(){ return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
-function rInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-function rUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=='x'?r:(r&0x3|0x8)).toString(16)}); }
+  const heartColors = ['#ffb3ba','#ffdfba','#ffffba','#baffc9','#bae1ff','#e8b3ff','#ffb3de'];
+  const sparkleColors = ['#ffd700','#ff69b4','#87ceeb','#dda0dd','#ffa07a','#98fb98'];
+  const hearts = ['♥','♡','❤','💕','💖','💗','✿','🌸'];
 
-function rerandom(){
-  document.getElementById('ts').textContent = new Date().toLocaleTimeString();
-  document.getElementById('rnum').textContent = rInt(1000,99999);
-  document.getElementById('uuid').textContent = rUUID();
-  const c = rHex();
-  document.getElementById('colbox').style.background = c;
-  document.getElementById('colhex').textContent = c;
+  let particleCount = 0;
+  const MAX_PARTICLES = 40;
 
-  const bars = document.getElementById('bars');
-  bars.innerHTML = '';
-  for(let i=0;i<4;i++){
-    const w = rInt(10,100);
-    bars.innerHTML += `
-      <div class="bar-label"><span>${barNames[i]}</span><span style="color:#666">${w}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${barColors[i]};"></div></div>`;
+  // Spawn floating bokeh background
+  function createBokeh() {
+    const colors = ['#ffcdd2','#f8bbd0','#e1bee7','#c5cae9','#b3e5fc','#c8e6c9','#fff9c4','#ffe0b2'];
+    for (let i = 0; i < 15; i++) {
+      const b = document.createElement('div');
+      b.className = 'bokeh';
+      const size = 10 + Math.random() * 40;
+      b.style.width = size + 'px';
+      b.style.height = size + 'px';
+      b.style.left = Math.random() * 100 + 'vw';
+      b.style.background = colors[Math.floor(Math.random() * colors.length)];
+      b.style.animationDuration = (8 + Math.random() * 12) + 's';
+      b.style.animationDelay = (-Math.random() * 20) + 's';
+      document.body.appendChild(b);
+    }
+  }
+  createBokeh();
+
+  // Particle spawning
+  function spawnHeart(x, y) {
+    if (particleCount >= MAX_PARTICLES) return;
+    const el = document.createElement('div');
+    el.className = 'particle heart';
+    el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    el.style.left = (x + (Math.random() - 0.5) * 80) + 'px';
+    el.style.top = (y + (Math.random() - 0.5) * 40) + 'px';
+    el.style.fontSize = (14 + Math.random() * 18) + 'px';
+    el.style.color = heartColors[Math.floor(Math.random() * heartColors.length)];
+    el.style.animationDuration = (1.8 + Math.random() * 1.5) + 's';
+    particleContainer.appendChild(el);
+    particleCount++;
+    el.addEventListener('animationend', () => { el.remove(); particleCount--; });
   }
 
-  const tags = document.getElementById('tags');
-  tags.innerHTML = '';
-  const n = rInt(5,11);
-  for(let i=0;i<n;i++) tags.innerHTML += `<span class="tag">${words[rInt(0,words.length-1)]}_${rInt(1,99)}</span>`;
-}
+  function spawnSparkle(x, y) {
+    if (particleCount >= MAX_PARTICLES) return;
+    const el = document.createElement('div');
+    el.className = 'particle sparkle';
+    el.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+    el.style.top = (y + (Math.random() - 0.5) * 60) + 'px';
+    el.style.color = sparkleColors[Math.floor(Math.random() * sparkleColors.length)];
+    el.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+    const size = 6 + Math.random() * 8;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    particleContainer.appendChild(el);
+    particleCount++;
+    el.addEventListener('animationend', () => { el.remove(); particleCount--; });
+  }
 
-rerandom();
+  // Ambient particles
+  setInterval(() => {
+    const rect = character.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    spawnHeart(cx, cy - 30);
+    if (Math.random() > 0.4) spawnSparkle(cx, cy);
+  }, 1200);
+
+  // Hover burst
+  let hoverBurst = false;
+  character.addEventListener('mouseenter', () => {
+    if (hoverBurst) return;
+    hoverBurst = true;
+    const rect = character.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        spawnHeart(cx, cy - 20);
+        spawnSparkle(cx, cy);
+      }, i * 60);
+    }
+  });
+  character.addEventListener('mouseleave', () => { hoverBurst = false; });
+
+  // Click squish + burst
+  character.addEventListener('click', (e) => {
+    character.classList.remove('squish');
+    void character.offsetWidth;
+    character.classList.add('squish');
+    setTimeout(() => character.classList.remove('squish'), 500);
+
+    const rect = character.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    for (let i = 0; i < 15; i++) {
+      setTimeout(() => {
+        spawnHeart(cx, cy - 30);
+        spawnSparkle(cx, cy - 10);
+      }, i * 40);
+    }
+  });
+
+  // Eye tracking - eyes follow mouse
+  document.addEventListener('mousemove', (e) => {
+    const rect = character.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height * 0.35;
+    const dx = (e.clientX - cx) / window.innerWidth * 5;
+    const dy = (e.clientY - cy) / window.innerHeight * 4;
+    const clampDx = Math.max(-3.5, Math.min(3.5, dx));
+    const clampDy = Math.max(-2.5, Math.min(2.5, dy));
+
+    const highlights = document.querySelectorAll('.eye-highlight-main, .eye-highlight-small');
+    highlights.forEach(h => {
+      h.style.transform = `translate(${clampDx}px, ${clampDy}px)`;
+    });
+  });
+
+  // Touch support for mobile
+  character.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    character.click();
+  }, { passive: false });
 </script>
 </body>
 </html>
