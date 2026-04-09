@@ -1302,3 +1302,311 @@ a { color: inherit; text-decoration: none; }
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* ============================================================
+   Splash Screen
+   ============================================================ */
+.splash {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s, transform 0.5s;
+}
+.splash-exit {
+  opacity: 0;
+  transform: scale(1.05);
+}
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.splash-logo {
+  width: 64px;
+  height: 64px;
+  animation: splashPulse 2s ease infinite;
+}
+.splash-logo svg { width: 100%; height: 100%; stroke: var(--accent); }
+.splash-name {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.splash-loader {
+  width: 120px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  overflow: hidden;
+  margin-top: 8px;
+}
+.splash-loader-bar {
+  width: 40%;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: splashLoad 1.2s ease infinite;
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@keyframes splashLoad {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+
+/* ============================================================
+   Onboarding
+   ============================================================ */
+.onboarding {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.4s;
+}
+.onboard-exit { animation: fadeOut 0.5s ease forwards; }
+.onboard-transitioning { opacity: 0.3; transition: opacity 0.15s; }
+@keyframes fadeOut { to { opacity: 0; transform: scale(0.95); } }
+
+.onboard-step {
+  width: 100%;
+  max-width: 400px;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.4s ease;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+/* Welcome */
+.onboard-logo { text-align: center; margin-bottom: 32px; }
+.onboard-logo-icon {
+  width: 72px; height: 72px; margin: 0 auto 16px;
+  animation: splashPulse 3s ease infinite;
+}
+.onboard-logo-icon svg { width: 100%; height: 100%; stroke: var(--accent); }
+.onboard-app-name { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; }
+.onboard-tagline { font-size: 16px; color: var(--text-secondary); margin-top: 4px; }
+
+.onboard-welcome-features {
+  display: flex; flex-direction: column; gap: 16px;
+  width: 100%; margin-bottom: 32px;
+}
+.onboard-feature {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; border-radius: 14px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+}
+.onboard-feature-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.onboard-feature strong { font-size: 14px; display: block; margin-bottom: 2px; }
+.onboard-feature p { font-size: 13px; color: var(--text-secondary); line-height: 1.4; margin: 0; }
+
+.onboard-btn {
+  width: 100%; padding: 16px; border-radius: 14px;
+  font-size: 16px; font-weight: 700; border: none; cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.onboard-btn:active { transform: scale(0.97); }
+.onboard-btn:disabled { opacity: 0.4; pointer-events: none; }
+.onboard-btn-primary {
+  background: var(--accent); color: white;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+.onboard-privacy-note {
+  margin-top: 16px; font-size: 12px; color: var(--text-muted); text-align: center;
+}
+
+/* Step header (back + progress) */
+.onboard-step-header {
+  display: flex; align-items: center; gap: 12px; width: 100%; margin-bottom: 24px;
+}
+.onboard-back {
+  background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px;
+}
+.onboard-progress {
+  flex: 1; height: 4px; border-radius: 2px; background: var(--bg-elevated);
+}
+.onboard-progress-fill {
+  height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.3s;
+}
+
+.onboard-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; text-align: center; }
+.onboard-subtitle { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 24px; line-height: 1.4; }
+
+/* Interest cards */
+.onboard-interest-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 24px;
+}
+.onboard-interest-card {
+  position: relative; padding: 18px 14px; border-radius: 14px; border: 2px solid var(--border);
+  background: var(--bg-surface); cursor: pointer; text-align: center;
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.onboard-interest-card:active { transform: scale(0.96); }
+.onboard-interest-card.selected {
+  border-color: var(--cat-color); background: color-mix(in srgb, var(--cat-color) 8%, transparent);
+}
+.onboard-interest-emoji { font-size: 28px; }
+.onboard-interest-name { font-size: 13px; font-weight: 600; }
+.onboard-interest-check {
+  position: absolute; top: 8px; right: 8px; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--cat-color); display: none;
+  align-items: center; justify-content: center;
+}
+.onboard-interest-check svg { width: 14px; height: 14px; stroke: white; }
+.onboard-interest-card.selected .onboard-interest-check { display: flex; }
+
+/* Identity card */
+.onboard-identity-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 28px 20px; border-radius: 18px;
+  background: var(--bg-surface); border: 1px solid var(--border);
+  width: 100%; margin-bottom: 20px;
+}
+.onboard-avatar {
+  width: 72px; height: 72px; border-radius: 50%; border: 3px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; margin-bottom: 4px;
+}
+.onboard-identity-name { font-size: 20px; font-weight: 700; }
+.onboard-identity-username { font-size: 14px; color: var(--text-secondary); }
+.onboard-identity-actions {
+  display: flex; gap: 10px; margin-top: 12px;
+}
+.onboard-reroll {
+  display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--bg-elevated);
+  color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+.onboard-reroll:active { transform: scale(0.95); background: var(--bg-surface); }
+
+.onboard-anon-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 10px;
+  background: rgba(74,223,138,0.08); border: 1px solid rgba(74,223,138,0.15);
+  color: var(--environment); font-size: 12px; font-weight: 600;
+  width: 100%; margin-bottom: 24px;
+}
+
+/* ============================================================
+   Settings Page
+   ============================================================ */
+.settings-page {
+  height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px);
+}
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 48px 16px 16px; position: sticky; top: 0;
+  background: var(--bg); z-index: 10;
+}
+.settings-header h1 { font-size: 18px; font-weight: 700; }
+.settings-back { color: var(--text-primary); }
+
+.settings-section { padding: 0 16px; margin-bottom: 28px; }
+.settings-section-title {
+  font-size: 12px; font-weight: 600; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 10px; padding-left: 4px;
+}
+
+.settings-identity-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px; border-radius: 14px; background: var(--bg-surface);
+  border: 1px solid var(--border); margin-bottom: 12px;
+}
+.settings-avatar {
+  width: 48px; height: 48px; border-radius: 50%; border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; flex-shrink: 0;
+}
+.settings-display-name { font-size: 16px; font-weight: 700; }
+.settings-username { font-size: 13px; color: var(--text-secondary); }
+
+.settings-row-group {
+  border-radius: 14px; overflow: hidden; border: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+.settings-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; width: 100%; text-align: left;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row:active { background: var(--bg-elevated); }
+.settings-row-icon { width: 24px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex-shrink: 0; }
+.settings-row-label { flex: 1; font-size: 15px; }
+.settings-row-arrow { color: var(--text-muted); flex-shrink: 0; }
+.settings-row-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+.settings-row-info { flex: 1; }
+.settings-info-row { pointer-events: none; }
+.settings-toggle-row { pointer-events: auto; }
+.settings-toggle-row:active { background: transparent; }
+
+/* Toggle switch */
+.settings-toggle { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+.settings-toggle input { opacity: 0; width: 0; height: 0; }
+.settings-toggle-track {
+  position: absolute; inset: 0; border-radius: 13px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  transition: background 0.3s; cursor: pointer;
+}
+.settings-toggle-track::before {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--text-secondary); transition: transform 0.3s, background 0.3s;
+}
+.settings-toggle input:checked + .settings-toggle-track {
+  background: var(--accent); border-color: var(--accent);
+}
+.settings-toggle input:checked + .settings-toggle-track::before {
+  transform: translateX(18px); background: white;
+}
+
+/* Logout */
+.settings-logout {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px; border-radius: 14px;
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15);
+  color: #EF4444; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: background 0.15s;
+}
+.settings-logout:active { background: rgba(239,68,68,0.15); }
+.settings-logout-note {
+  font-size: 12px; color: var(--text-muted); text-align: center;
+  margin-top: 8px; padding: 0 8px; line-height: 1.4;
+}
+
+/* ============================================================
+   Profile Enhancements
+   ============================================================ */
+.profile-top-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 48px 16px 8px; position: sticky; top: 0;
+  background: var(--bg); z-index: 10;
+}
+.profile-top-username { font-size: 15px; font-weight: 700; }
+.profile-settings-btn { color: var(--text-secondary); padding: 4px; }
+
+.profile-anon-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 12px;
+  background: rgba(74,223,138,0.1); color: var(--environment);
+  font-size: 11px; font-weight: 600; margin-bottom: 16px;
+}

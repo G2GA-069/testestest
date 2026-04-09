@@ -6,41 +6,22 @@ import { initFeed, showFeed, hideFeed } from './feed.js';
 import { initDiscover, showDiscover, hideDiscover } from './discover.js';
 import { initProfile, showProfile, hideProfile } from './profile.js';
 import { initLive, showLive, hideLive } from './live.js';
+import { initSettings, showSettings, hideSettings } from './settings.js';
 import { initComments } from './comments.js';
+import { isLoggedIn, loadUser, logout } from './auth.js';
+import { showOnboarding, hideOnboarding } from './onboarding.js';
 
 // ----- State -----
 export const state = {
   currentPage: 'feed',
-  likedVideos: new Set(),
-  savedVideos: new Set(),
-  following: new Set(),
   currentVideoIndex: 0,
 };
-
-// Load persisted state
-try {
-  const saved = JSON.parse(localStorage.getItem('uplift_state'));
-  if (saved) {
-    if (saved.likedVideos) state.likedVideos = new Set(saved.likedVideos);
-    if (saved.savedVideos) state.savedVideos = new Set(saved.savedVideos);
-    if (saved.following) state.following = new Set(saved.following);
-  }
-} catch (e) { /* ignore */ }
-
-export function saveState() {
-  try {
-    localStorage.setItem('uplift_state', JSON.stringify({
-      likedVideos: [...state.likedVideos],
-      savedVideos: [...state.savedVideos],
-      following: [...state.following],
-    }));
-  } catch (e) { /* ignore */ }
-}
 
 // ----- Toast -----
 let toastTimeout = null;
 export function showToast(message) {
   const el = document.getElementById('toast');
+  if (!el) return;
   el.textContent = message;
   el.classList.add('show');
   clearTimeout(toastTimeout);
@@ -54,6 +35,7 @@ const pages = {
   create:   { show: showCreate,   hide: hideCreate },
   live:     { show: showLive,     hide: hideLive },
   profile:  { show: showProfile,  hide: hideProfile },
+  settings: { show: showSettings, hide: hideSettings },
 };
 
 function showCreate() {
@@ -63,7 +45,7 @@ function hideCreate() {
   document.getElementById('page-create').classList.remove('active');
 }
 
-function navigateTo(page) {
+export function navigateTo(page) {
   if (page === state.currentPage) return;
   const prev = pages[state.currentPage];
   if (prev) prev.hide();
@@ -74,20 +56,42 @@ function navigateTo(page) {
   const next = pages[page];
   if (next) next.show();
 
-  // Update nav
+  // Update nav (settings doesn't have a nav item)
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.page === page);
   });
+
+  // Show/hide nav for settings
+  const nav = document.getElementById('bottom-nav');
+  if (page === 'settings') {
+    nav.style.display = 'none';
+  } else {
+    nav.style.display = '';
+  }
 }
 
-// ----- Init -----
-function initApp() {
-  // Init all pages
+// ----- Splash Screen -----
+function hideSplash() {
+  return new Promise(resolve => {
+    const splash = document.getElementById('splash');
+    splash.classList.add('splash-exit');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      resolve();
+    }, 600);
+  });
+}
+
+// ----- Boot the app -----
+function showApp() {
+  document.getElementById('app').style.display = '';
+
   initComments();
   initFeed();
   initDiscover();
   initProfile();
   initLive();
+  initSettings();
   initCreatePage();
 
   // Bottom nav
@@ -98,21 +102,32 @@ function initApp() {
     });
   });
 
-  // Hash routing (optional, for direct links)
-  const hash = location.hash.replace('#', '');
-  if (hash && pages[hash]) {
-    navigateTo(hash);
-  }
-
-  window.addEventListener('hashchange', () => {
-    const h = location.hash.replace('#', '');
-    if (h && pages[h]) navigateTo(h);
+  // Custom navigation events (from settings, etc.)
+  window.addEventListener('navigate', (e) => {
+    navigateTo(e.detail);
   });
+
+  // Logout event
+  window.addEventListener('logout', () => {
+    document.getElementById('app').style.display = 'none';
+    showOnboarding(onOnboardingComplete);
+  });
+}
+
+function onOnboardingComplete(user) {
+  // Reload the app with the new user
+  document.getElementById('app').style.display = '';
+  // Re-init pages that depend on user data
+  initFeed();
+  initProfile();
+  navigateTo('feed');
+  showToast(`Welcome, ${user.displayName}!`);
 }
 
 // ----- Create Page (simple, inline) -----
 function initCreatePage() {
   const page = document.getElementById('page-create');
+  const user = loadUser();
 
   const categories = [
     { name: 'Education', color: '#4A9EFF', emoji: '\uD83C\uDF93' },
@@ -154,5 +169,20 @@ function initCreatePage() {
   page.querySelector('#create-upload')?.addEventListener('click', () => showToast('Upload feature coming soon!'));
 }
 
-// Boot
-document.addEventListener('DOMContentLoaded', initApp);
+// ----- Entry Point -----
+async function boot() {
+  // Show splash for minimum 1.2s
+  await new Promise(r => setTimeout(r, 1200));
+  await hideSplash();
+
+  if (isLoggedIn()) {
+    showApp();
+  } else {
+    showOnboarding(user => {
+      showApp();
+      showToast(`Welcome to Uplift, ${user.displayName}!`);
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', boot);

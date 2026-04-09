@@ -3,14 +3,15 @@
 // ============================================================
 
 import { VIDEOS, CATEGORIES, getCreator, formatCount } from './data.js';
-import { state, saveState, showToast } from './app.js';
+import { state, showToast } from './app.js';
 import { openComments } from './comments.js';
+import { loadUser, toggleLike, toggleSave, toggleFollow, isLiked, isSaved, isFollowing, recordWatch, getInitials } from './auth.js';
 
 let feedContainer = null;
 let progressInterval = null;
 let currentActiveIndex = 0;
+let initialized = false;
 
-// SVG Icons
 const ICONS = {
   heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
   heartFilled: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
@@ -28,17 +29,13 @@ function formatDescription(desc) {
   return desc.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
 }
 
-function getInitials(name) {
-  return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
-}
-
 function createVideoCard(video, index) {
   const creator = getCreator(video.creatorId);
   const category = CATEGORIES[video.category];
-  const isLiked = state.likedVideos.has(video.id);
-  const isSaved = state.savedVideos.has(video.id);
-  const isFollowing = state.following.has(video.creatorId);
-  const likeCount = isLiked ? video.likes + 1 : video.likes;
+  const liked = isLiked(video.id);
+  const saved = isSaved(video.id);
+  const following = isFollowing(video.creatorId);
+  const likeCount = liked ? video.likes + 1 : video.likes;
 
   const card = document.createElement('div');
   card.className = 'video-card';
@@ -48,25 +45,15 @@ function createVideoCard(video, index) {
   const gradientStyle = `background: linear-gradient(135deg, ${video.gradientColors.join(', ')});`;
 
   card.innerHTML = `
-    <!-- Progress bar -->
-    <div class="video-progress">
-      <div class="video-progress-fill"></div>
-    </div>
-
-    <!-- Video background -->
+    <div class="video-progress"><div class="video-progress-fill"></div></div>
     <div class="video-bg" style="${gradientStyle}"></div>
-
-    <!-- Play indicator -->
     <div class="play-indicator">${ICONS.play}</div>
 
     ${video.isLive ? `
       <div class="live-badge">LIVE</div>
-      <div class="live-viewers">
-        ${ICONS.eye} ${formatCount(Math.floor(Math.random() * 5000 + 500))} watching
-      </div>
+      <div class="live-viewers">${ICONS.eye} ${formatCount(Math.floor(Math.random() * 5000 + 500))} watching</div>
     ` : ''}
 
-    <!-- Content title (centered) -->
     <div class="video-content-title">
       <h2>${video.title}</h2>
       <div class="category-badge" style="color: ${category.color};">
@@ -74,15 +61,14 @@ function createVideoCard(video, index) {
       </div>
     </div>
 
-    <!-- Bottom info -->
     <div class="video-info">
       <div class="video-info-creator">
         <div class="creator-avatar" style="background: ${creator.color}20; color: ${creator.color};">
           ${getInitials(creator.displayName)}
         </div>
         <span class="creator-name">@${creator.username}</span>
-        <button class="follow-btn ${isFollowing ? 'following' : ''}" data-creator-id="${creator.id}">
-          ${isFollowing ? 'Following' : 'Follow'}
+        <button class="follow-btn ${following ? 'following' : ''}" data-creator-id="${creator.id}">
+          ${following ? 'Following' : 'Follow'}
         </button>
       </div>
       <div class="video-description">${formatDescription(video.description)}</div>
@@ -90,9 +76,7 @@ function createVideoCard(video, index) {
         ${ICONS.music}
         <div class="sound-marquee"><span>${video.sound}&nbsp;&nbsp;&nbsp;&nbsp;${video.sound}&nbsp;&nbsp;&nbsp;&nbsp;</span></div>
       </div>
-      <div class="video-inspired">
-        ${ICONS.sparkle} ${formatCount(video.inspired)} people inspired
-      </div>
+      <div class="video-inspired">${ICONS.sparkle} ${formatCount(video.inspired)} people inspired</div>
     </div>
 
     ${index === 0 ? `
@@ -102,33 +86,27 @@ function createVideoCard(video, index) {
       </div>
     ` : ''}
 
-    <!-- Action bar -->
     <div class="action-bar">
       <div class="action-avatar" style="background: ${creator.color}30; color: ${creator.color};">
         ${getInitials(creator.displayName)}
-        ${!isFollowing ? '<span class="action-avatar-plus">+</span>' : ''}
+        ${!following ? '<span class="action-avatar-plus">+</span>' : ''}
       </div>
-
-      <button class="action-btn action-like ${isLiked ? 'liked' : ''}" data-video-id="${video.id}" data-action="like">
-        ${isLiked ? ICONS.heartFilled : ICONS.heart}
+      <button class="action-btn action-like ${liked ? 'liked' : ''}" data-video-id="${video.id}" data-action="like">
+        ${liked ? ICONS.heartFilled : ICONS.heart}
         <span class="action-count">${formatCount(likeCount)}</span>
       </button>
-
       <button class="action-btn action-comment" data-video-id="${video.id}" data-action="comment">
         ${ICONS.comment}
         <span class="action-count">${formatCount(video.comments)}</span>
       </button>
-
       <button class="action-btn action-share" data-video-id="${video.id}" data-action="share">
         ${ICONS.share}
         <span class="action-count">${formatCount(video.shares)}</span>
       </button>
-
-      <button class="action-btn action-save ${isSaved ? 'saved' : ''}" data-video-id="${video.id}" data-action="save">
-        ${isSaved ? ICONS.bookmarkFilled : ICONS.bookmark}
+      <button class="action-btn action-save ${saved ? 'saved' : ''}" data-video-id="${video.id}" data-action="save">
+        ${saved ? ICONS.bookmarkFilled : ICONS.bookmark}
         <span class="action-count">${formatCount(video.saves)}</span>
       </button>
-
       <div class="action-impact" title="Impact Score">
         <span class="impact-value">${video.impactScore}</span>
         <span class="impact-label">Impact</span>
@@ -146,38 +124,26 @@ function setupIntersectionObserver() {
         const index = parseInt(entry.target.dataset.index);
         if (index !== currentActiveIndex) {
           setActiveVideo(index);
-          // Hide swipe hint after first scroll
+          recordWatch();
           const hint = feedContainer.querySelector('.swipe-hint');
           if (hint) hint.remove();
         }
       }
     });
-  }, {
-    root: feedContainer,
-    threshold: [0.5],
-  });
+  }, { root: feedContainer, threshold: [0.5] });
 
-  feedContainer.querySelectorAll('.video-card').forEach(card => {
-    observer.observe(card);
-  });
+  feedContainer.querySelectorAll('.video-card').forEach(card => observer.observe(card));
 }
 
 function setActiveVideo(index) {
   const prevCard = feedContainer.querySelector(`.video-card[data-index="${currentActiveIndex}"]`);
-  if (prevCard) {
-    prevCard.classList.remove('active-card');
-    prevCard.classList.add('paused');
-  }
+  if (prevCard) { prevCard.classList.remove('active-card'); prevCard.classList.add('paused'); }
 
   currentActiveIndex = index;
   state.currentVideoIndex = index;
 
   const card = feedContainer.querySelector(`.video-card[data-index="${index}"]`);
-  if (card) {
-    card.classList.add('active-card');
-    card.classList.remove('paused');
-    startProgress(card);
-  }
+  if (card) { card.classList.add('active-card'); card.classList.remove('paused'); startProgress(card); }
 }
 
 function startProgress(card) {
@@ -185,38 +151,26 @@ function startProgress(card) {
   const fill = card.querySelector('.video-progress-fill');
   if (!fill) return;
 
-  const videoId = card.dataset.videoId;
-  const video = VIDEOS.find(v => v.id === videoId);
+  const video = VIDEOS.find(v => v.id === card.dataset.videoId);
   const duration = (video?.duration || 15) * 1000;
-  const startTime = Date.now();
 
   fill.style.transition = 'none';
   fill.style.width = '0%';
-
-  // Force reflow
   fill.offsetHeight;
-
   fill.style.transition = `width ${duration}ms linear`;
   fill.style.width = '100%';
 
+  const startTime = Date.now();
   progressInterval = setInterval(() => {
-    const elapsed = Date.now() - startTime;
-    if (elapsed >= duration) {
+    if (Date.now() - startTime >= duration) {
       clearInterval(progressInterval);
-      // Auto-advance to next video
       const nextIndex = currentActiveIndex + 1;
       if (nextIndex < VIDEOS.length) {
         const nextCard = feedContainer.querySelector(`.video-card[data-index="${nextIndex}"]`);
-        if (nextCard) {
-          nextCard.scrollIntoView({ behavior: 'smooth' });
-        }
+        if (nextCard) nextCard.scrollIntoView({ behavior: 'smooth' });
       } else {
-        // Loop back to first
-        fill.style.transition = 'none';
-        fill.style.width = '0%';
-        fill.offsetHeight;
-        fill.style.transition = `width ${duration}ms linear`;
-        fill.style.width = '100%';
+        fill.style.transition = 'none'; fill.style.width = '0%'; fill.offsetHeight;
+        fill.style.transition = `width ${duration}ms linear`; fill.style.width = '100%';
       }
     }
   }, 500);
@@ -225,72 +179,44 @@ function startProgress(card) {
 function handleActionClick(e) {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
-
-  const action = btn.dataset.action;
   const videoId = btn.dataset.videoId;
   const video = VIDEOS.find(v => v.id === videoId);
   if (!video) return;
 
-  switch (action) {
-    case 'like':
-      toggleLike(videoId, video, btn);
+  switch (btn.dataset.action) {
+    case 'like': {
+      const nowLiked = toggleLike(videoId);
+      btn.classList.toggle('liked', nowLiked);
+      btn.innerHTML = `${nowLiked ? ICONS.heartFilled : ICONS.heart}<span class="action-count">${formatCount(nowLiked ? video.likes + 1 : video.likes)}</span>`;
       break;
-    case 'comment':
-      openComments(videoId);
+    }
+    case 'comment': openComments(videoId); break;
+    case 'share': {
+      if (navigator.share) {
+        navigator.share({ title: `Uplift: ${video.title}`, text: video.description, url: window.location.href }).catch(() => {});
+      } else {
+        navigator.clipboard?.writeText(window.location.href).then(() => showToast('Link copied!')).catch(() => showToast('Link copied!'));
+      }
       break;
-    case 'share':
-      handleShare(video);
+    }
+    case 'save': {
+      const nowSaved = toggleSave(videoId);
+      btn.classList.toggle('saved', nowSaved);
+      btn.innerHTML = `${nowSaved ? ICONS.bookmarkFilled : ICONS.bookmark}<span class="action-count">${formatCount(nowSaved ? video.saves + 1 : video.saves)}</span>`;
+      showToast(nowSaved ? 'Saved!' : 'Removed from saved');
       break;
-    case 'save':
-      toggleSave(videoId, video, btn);
-      break;
+    }
   }
 }
 
-function toggleLike(videoId, video, btn) {
-  const isLiked = state.likedVideos.has(videoId);
-  if (isLiked) {
-    state.likedVideos.delete(videoId);
-    btn.classList.remove('liked');
-    btn.innerHTML = `${ICONS.heart}<span class="action-count">${formatCount(video.likes)}</span>`;
-  } else {
-    state.likedVideos.add(videoId);
-    btn.classList.add('liked');
-    btn.innerHTML = `${ICONS.heartFilled}<span class="action-count">${formatCount(video.likes + 1)}</span>`;
-  }
-  saveState();
-}
-
-function toggleSave(videoId, video, btn) {
-  const isSaved = state.savedVideos.has(videoId);
-  if (isSaved) {
-    state.savedVideos.delete(videoId);
-    btn.classList.remove('saved');
-    btn.innerHTML = `${ICONS.bookmark}<span class="action-count">${formatCount(video.saves)}</span>`;
-    showToast('Removed from saved');
-  } else {
-    state.savedVideos.add(videoId);
-    btn.classList.add('saved');
-    btn.innerHTML = `${ICONS.bookmarkFilled}<span class="action-count">${formatCount(video.saves + 1)}</span>`;
-    showToast('Saved!');
-  }
-  saveState();
-}
-
-function handleShare(video) {
-  if (navigator.share) {
-    navigator.share({
-      title: `Uplift: ${video.title}`,
-      text: video.description,
-      url: window.location.href,
-    }).catch(() => {});
-  } else {
-    navigator.clipboard?.writeText(window.location.href).then(() => {
-      showToast('Link copied!');
-    }).catch(() => {
-      showToast('Link copied!');
-    });
-  }
+function handleFollowClick(e) {
+  const btn = e.target.closest('.follow-btn');
+  if (!btn) return;
+  const creatorId = btn.dataset.creatorId;
+  const nowFollowing = toggleFollow(creatorId);
+  btn.classList.toggle('following', nowFollowing);
+  btn.textContent = nowFollowing ? 'Following' : 'Follow';
+  if (nowFollowing) showToast('Following!');
 }
 
 function handleDoubleTap(e) {
@@ -302,25 +228,21 @@ function handleDoubleTap(e) {
   const video = VIDEOS.find(v => v.id === videoId);
   if (!video) return;
 
-  // Show heart burst animation
   const heartBurst = document.getElementById('heart-burst');
-  const rect = card.getBoundingClientRect();
-  heartBurst.style.left = `${e.clientX || e.touches?.[0]?.clientX || rect.width / 2}px`;
-  heartBurst.style.top = `${e.clientY || e.touches?.[0]?.clientY || rect.height / 2}px`;
+  heartBurst.style.left = `${e.clientX || e.touches?.[0]?.clientX || 0}px`;
+  heartBurst.style.top = `${e.clientY || e.touches?.[0]?.clientY || 0}px`;
   heartBurst.classList.remove('active');
-  heartBurst.offsetHeight; // Force reflow
+  heartBurst.offsetHeight;
   heartBurst.classList.add('active');
   setTimeout(() => heartBurst.classList.remove('active'), 900);
 
-  // Like the video
-  if (!state.likedVideos.has(videoId)) {
-    state.likedVideos.add(videoId);
+  if (!isLiked(videoId)) {
+    toggleLike(videoId);
     const likeBtn = card.querySelector('.action-like');
     if (likeBtn) {
       likeBtn.classList.add('liked');
       likeBtn.innerHTML = `${ICONS.heartFilled}<span class="action-count">${formatCount(video.likes + 1)}</span>`;
     }
-    saveState();
   }
 }
 
@@ -328,83 +250,42 @@ function handleTapToPause(e) {
   const card = e.target.closest('.video-card');
   if (!card) return;
   if (e.target.closest('.action-bar') || e.target.closest('.video-info') || e.target.closest('.follow-btn')) return;
-
   card.classList.toggle('paused');
-  if (card.classList.contains('paused')) {
-    clearInterval(progressInterval);
-  } else {
-    startProgress(card);
-  }
+  if (card.classList.contains('paused')) clearInterval(progressInterval);
+  else startProgress(card);
 }
 
-function handleFollowClick(e) {
-  const btn = e.target.closest('.follow-btn');
-  if (!btn) return;
-
-  const creatorId = btn.dataset.creatorId;
-  const isFollowing = state.following.has(creatorId);
-
-  if (isFollowing) {
-    state.following.delete(creatorId);
-    btn.classList.remove('following');
-    btn.textContent = 'Follow';
-  } else {
-    state.following.add(creatorId);
-    btn.classList.add('following');
-    btn.textContent = 'Following';
-    showToast('Following!');
-  }
-  saveState();
-}
-
-// ----- Double-tap detection -----
 let lastTapTime = 0;
 function handleTap(e) {
   const now = Date.now();
-  if (now - lastTapTime < 300) {
-    handleDoubleTap(e);
-    lastTapTime = 0;
-  } else {
+  if (now - lastTapTime < 300) { handleDoubleTap(e); lastTapTime = 0; }
+  else {
     lastTapTime = now;
-    // Single tap — delay to check for double tap
     setTimeout(() => {
-      if (lastTapTime !== 0 && Date.now() - lastTapTime >= 280) {
-        handleTapToPause(e);
-        lastTapTime = 0;
-      }
+      if (lastTapTime !== 0 && Date.now() - lastTapTime >= 280) { handleTapToPause(e); lastTapTime = 0; }
     }, 300);
   }
 }
 
-// ----- Public API -----
 export function initFeed() {
   const page = document.getElementById('page-feed');
+  // Clear previous content if re-initializing
+  page.innerHTML = '';
 
   feedContainer = document.createElement('div');
   feedContainer.className = 'feed-container';
   page.appendChild(feedContainer);
 
-  // Render video cards
-  VIDEOS.forEach((video, index) => {
-    feedContainer.appendChild(createVideoCard(video, index));
-  });
+  VIDEOS.forEach((video, index) => feedContainer.appendChild(createVideoCard(video, index)));
 
-  // Event listeners
   feedContainer.addEventListener('click', handleActionClick);
   feedContainer.addEventListener('click', handleFollowClick);
   feedContainer.addEventListener('click', handleTap);
 
-  // Setup scroll observation
   setupIntersectionObserver();
-
-  // Activate first video
   setActiveVideo(0);
+  initialized = true;
 }
 
-export function showFeed() {
-  setActiveVideo(currentActiveIndex);
-}
-
-export function hideFeed() {
-  clearInterval(progressInterval);
-}
+export function showFeed() { if (initialized) setActiveVideo(currentActiveIndex); }
+export function hideFeed() { clearInterval(progressInterval); }

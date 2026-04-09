@@ -11,8 +11,24 @@
 </head>
 <body>
 
-  <!-- App Shell -->
-  <div id="app">
+  <!-- Splash Screen -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L14.4 9.2L22 12L14.4 14.8L12 22L9.6 14.8L2 12L9.6 9.2Z"/>
+        </svg>
+      </div>
+      <div class="splash-name">Uplift</div>
+      <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Onboarding (shown if not logged in) -->
+  <div id="onboarding" class="onboarding" style="display:none;"></div>
+
+  <!-- App Shell (shown if logged in) -->
+  <div id="app" style="display:none;">
 
     <!-- Pages -->
     <div id="page-feed" class="page active"></div>
@@ -20,6 +36,7 @@
     <div id="page-create" class="page"></div>
     <div id="page-live" class="page"></div>
     <div id="page-profile" class="page"></div>
+    <div id="page-settings" class="page"></div>
 
     <!-- Comment Bottom Sheet -->
     <div id="comment-backdrop" class="comment-backdrop"></div>
@@ -31,7 +48,7 @@
       </div>
       <div class="comment-sheet-list" id="comment-list"></div>
       <div class="comment-sheet-input">
-        <div class="comment-avatar-small"></div>
+        <div class="comment-avatar-small" id="comment-user-avatar"></div>
         <input type="text" placeholder="Add a comment..." id="comment-input">
         <button class="comment-send" id="comment-send">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
@@ -45,7 +62,7 @@
     <!-- Double-tap heart animation -->
     <div id="heart-burst" class="heart-burst">
       <svg width="80" height="80" viewBox="0 0 24 24" fill="#FF2D55"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </div>
+    </div>
 
     <!-- Bottom Navigation -->
     <nav id="bottom-nav" class="bottom-nav">
@@ -68,7 +85,7 @@
       </button>
       <button class="nav-item" data-page="profile">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>Profile</span>
+        <span>Me</span>
       </button>
     </nav>
   </div>

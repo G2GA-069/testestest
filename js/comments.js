@@ -4,6 +4,7 @@
 
 import { getComments, formatCount } from './data.js';
 import { showToast } from './app.js';
+import { loadUser, getInitials } from './auth.js';
 
 let currentVideoId = null;
 let sheetEl = null;
@@ -41,6 +42,22 @@ export function openComments(videoId) {
   currentVideoId = videoId;
   renderComments(videoId);
 
+  // Set the user's avatar in the comment input
+  const user = loadUser();
+  const avatarEl = document.getElementById('comment-user-avatar');
+  if (user && avatarEl) {
+    const initials = getInitials(user.username);
+    avatarEl.textContent = initials;
+    avatarEl.style.background = `${user.avatarColor}30`;
+    avatarEl.style.color = user.avatarColor;
+    avatarEl.style.display = 'flex';
+    avatarEl.style.alignItems = 'center';
+    avatarEl.style.justifyContent = 'center';
+    avatarEl.style.fontSize = '10px';
+    avatarEl.style.fontWeight = '700';
+    avatarEl.style.borderRadius = '50%';
+  }
+
   sheetEl.classList.add('active');
   backdropEl.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -58,14 +75,17 @@ function handleSend() {
   const text = inputEl.value.trim();
   if (!text || !currentVideoId) return;
 
-  // Add comment to top of list
+  const user = loadUser();
+  const username = user?.username || 'anonymous';
+  const initial = getInitials(username);
+
   const item = document.createElement('div');
   item.className = 'comment-item';
   item.style.animation = 'slideUp 0.3s ease';
   item.innerHTML = `
-    <div class="comment-item-avatar">Y</div>
+    <div class="comment-item-avatar" style="background: ${user?.avatarColor || '#666'}30; color: ${user?.avatarColor || '#666'};">${initial}</div>
     <div class="comment-item-body">
-      <div class="comment-item-username">@you</div>
+      <div class="comment-item-username">@${username}</div>
       <div class="comment-item-text">${text}</div>
       <div class="comment-item-meta">
         <span>Just now</span>
@@ -82,7 +102,6 @@ function handleSend() {
   showToast('Comment added!');
 }
 
-// Drag-to-dismiss
 function handleTouchStart(e) {
   const handle = e.target.closest('.comment-sheet-handle');
   if (!handle) return;
@@ -102,12 +121,8 @@ function handleTouchEnd() {
   if (!isDragging) return;
   isDragging = false;
   sheetEl.style.transition = '';
-  if (currentY > 120) {
-    closeComments();
-  } else {
-    sheetEl.style.transform = '';
-    sheetEl.classList.add('active');
-  }
+  if (currentY > 120) closeComments();
+  else { sheetEl.style.transform = ''; sheetEl.classList.add('active'); }
   currentY = 0;
 }
 
@@ -118,22 +133,12 @@ export function initComments() {
   countEl = sheetEl.querySelector('.comment-sheet-count');
   inputEl = document.getElementById('comment-input');
 
-  // Close button
   sheetEl.querySelector('.comment-sheet-close').addEventListener('click', closeComments);
-
-  // Backdrop click to close
   backdropEl.addEventListener('click', closeComments);
-
-  // Send comment
   document.getElementById('comment-send').addEventListener('click', handleSend);
-  inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') handleSend();
-  });
+  inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSend(); });
 
-  // Drag to dismiss
   sheetEl.addEventListener('touchstart', handleTouchStart, { passive: true });
   sheetEl.addEventListener('touchmove', handleTouchMove, { passive: true });
   sheetEl.addEventListener('touchend', handleTouchEnd);
 }
-
-// Exported for app.js to call after DOMContentLoaded
