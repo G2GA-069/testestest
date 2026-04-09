@@ -1,88 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Random Test Page</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: monospace; background: #0f0f0f; color: #e0e0e0; padding: 2rem; min-height: 100vh; }
-  h1 { font-size: 13px; color: #666; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .card { border: 1px solid #252525; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; background: #161616; }
-  .label { font-size: 11px; color: #555; margin-bottom: 8px; }
-  .value { font-size: 14px; color: #e0e0e0; margin-bottom: 6px; }
-  .value strong { color: #fff; font-weight: 500; }
-  code { font-size: 11px; color: #aaa; background: #1e1e1e; padding: 2px 6px; border-radius: 3px; }
-  .colbox { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
-  .bar-track { background: #1e1e1e; border-radius: 4px; height: 7px; margin: 5px 0 10px; }
-  .bar-fill { height: 7px; border-radius: 4px; transition: width 0.3s ease; }
-  .bar-label { font-size: 11px; color: #555; margin-bottom: 2px; display: flex; justify-content: space-between; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; background: #1e1e1e; color: #888; border: 1px solid #2a2a2a; }
-  .btn { margin-top: 1.5rem; padding: 7px 20px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #ccc; font-family: monospace; font-size: 12px; cursor: pointer; transition: background 0.15s; }
-  .btn:hover { background: #252525; color: #fff; }
-  .ts { color: #444; font-size: 11px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Uplift — Content That Matters</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<h1>Test Page</h1>
-<p class="ts">rendered at <span id="ts"></span></p>
+  <!-- App Shell -->
+  <div id="app">
 
-<div class="card">
-  <div class="label">random values</div>
-  <div class="value">number — <strong id="rnum"></strong></div>
-  <div class="value">uuid — <code id="uuid"></code></div>
-  <div class="value">
-    color — <span class="colbox" id="colbox"></span><code id="colhex"></code>
+    <!-- Pages -->
+    <div id="page-feed" class="page active"></div>
+    <div id="page-discover" class="page"></div>
+    <div id="page-create" class="page"></div>
+    <div id="page-live" class="page"></div>
+    <div id="page-profile" class="page"></div>
+
+    <!-- Comment Bottom Sheet -->
+    <div id="comment-backdrop" class="comment-backdrop"></div>
+    <div id="comment-sheet" class="comment-sheet">
+      <div class="comment-sheet-handle"></div>
+      <div class="comment-sheet-header">
+        <span class="comment-sheet-count"></span>
+        <button class="comment-sheet-close" aria-label="Close comments">&times;</button>
+      </div>
+      <div class="comment-sheet-list" id="comment-list"></div>
+      <div class="comment-sheet-input">
+        <div class="comment-avatar-small"></div>
+        <input type="text" placeholder="Add a comment..." id="comment-input">
+        <button class="comment-send" id="comment-send">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Double-tap heart animation -->
+    <div id="heart-burst" class="heart-burst">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="#FF2D55"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+
+    <!-- Bottom Navigation -->
+    <nav id="bottom-nav" class="bottom-nav">
+      <button class="nav-item active" data-page="feed">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>Home</span>
+      </button>
+      <button class="nav-item" data-page="discover">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <span>Discover</span>
+      </button>
+      <button class="nav-item nav-create" data-page="create">
+        <div class="nav-create-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+      </button>
+      <button class="nav-item" data-page="live">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Live</span>
+      </button>
+      <button class="nav-item" data-page="profile">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
   </div>
-</div>
 
-<div class="card">
-  <div class="label">random progress bars</div>
-  <div id="bars"></div>
-</div>
-
-<div class="card">
-  <div class="label">random tags</div>
-  <div class="tags" id="tags"></div>
-</div>
-
-<button class="btn" onclick="rerandom()">rerandomise</button>
-
-<script>
-const words = ['alpha','beta','gamma','delta','sigma','omega','zeta','kappa','lambda','theta','iota','phi','quanta','vector','tensor','matrix'];
-const barColors = ['#4a9eff','#4adf8a','#f5c842','#f56e6e'];
-const barNames = ['metric_A','metric_B','metric_C','metric_D'];
-
-function rHex(){ return '#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'); }
-function rInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
-function rUUID(){ return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c=='x'?r:(r&0x3|0x8)).toString(16)}); }
-
-function rerandom(){
-  document.getElementById('ts').textContent = new Date().toLocaleTimeString();
-  document.getElementById('rnum').textContent = rInt(1000,99999);
-  document.getElementById('uuid').textContent = rUUID();
-  const c = rHex();
-  document.getElementById('colbox').style.background = c;
-  document.getElementById('colhex').textContent = c;
-
-  const bars = document.getElementById('bars');
-  bars.innerHTML = '';
-  for(let i=0;i<4;i++){
-    const w = rInt(10,100);
-    bars.innerHTML += `
-      <div class="bar-label"><span>${barNames[i]}</span><span style="color:#666">${w}%</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${barColors[i]};"></div></div>`;
-  }
-
-  const tags = document.getElementById('tags');
-  tags.innerHTML = '';
-  const n = rInt(5,11);
-  for(let i=0;i<n;i++) tags.innerHTML += `<span class="tag">${words[rInt(0,words.length-1)]}_${rInt(1,99)}</span>`;
-}
-
-rerandom();
-</script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
