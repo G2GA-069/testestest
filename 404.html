@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>This site is paused</title>
+<title>This site is currently offline</title>
 <meta name="robots" content="noindex">
 <style>
 :root { color-scheme: dark; }
@@ -11,7 +11,7 @@
 html, body { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
-  background: radial-gradient(ellipse at top, #12121A 0%, #08080E 65%);
+  background: radial-gradient(ellipse at top, #12121A 0%, #08080E 70%);
   color: #F5F5FA;
   display: flex;
   align-items: center;
@@ -20,66 +20,55 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
-.card { width: 100%; max-width: 460px; text-align: center; }
-.badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 13px;
-  border-radius: 999px;
-  background: rgba(255,181,71,0.10);
-  border: 1px solid rgba(255,181,71,0.35);
-  color: #FFB547;
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  margin-bottom: 28px;
+.card { width: 100%; max-width: 480px; text-align: center; }
+.status-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #4FFFE0;
+  box-shadow: 0 0 0 4px rgba(79,255,224,0.12), 0 0 20px rgba(79,255,224,0.4);
+  margin: 0 auto 28px;
+  animation: pulse 2.4s ease-in-out infinite;
 }
-.badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #FFB547; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.4; }
+}
 h1 {
-  font-size: clamp(28px, 5vw, 38px); font-weight: 700;
+  font-size: clamp(26px, 4.5vw, 34px); font-weight: 600;
   letter-spacing: -0.02em; margin-bottom: 14px; color: #F5F5FA;
 }
-p.lead { color: #B5B5BF; font-size: 16px; margin-bottom: 40px; }
-.advert {
-  background: rgba(79,255,224,0.04);
-  border: 1px solid rgba(79,255,224,0.22);
-  border-radius: 16px;
-  padding: 30px 26px;
-  text-align: center;
+p.lead { color: #9797A0; font-size: 15px; margin-bottom: 48px; }
+.invite {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 34px;
 }
-.advert-eyebrow {
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 0.1em; text-transform: uppercase;
-  color: #4FFFE0; margin-bottom: 12px;
+.invite-title {
+  font-size: 17px; font-weight: 500;
+  color: #F5F5FA; margin-bottom: 18px;
+  letter-spacing: -0.01em;
 }
-.advert-title {
-  font-size: 22px; font-weight: 700;
-  letter-spacing: -0.01em; margin-bottom: 10px; color: #F5F5FA;
-}
-.advert-sub { color: #B5B5BF; font-size: 14px; margin-bottom: 22px; }
-.advert-cta {
+.invite-cta {
   display: inline-block;
   background: #4FFFE0; color: #08080E;
-  font-weight: 700; font-size: 15px;
-  padding: 13px 28px; border-radius: 10px;
+  font-weight: 600; font-size: 14px;
+  padding: 12px 24px; border-radius: 8px;
   text-decoration: none;
   transition: transform 0.15s ease, filter 0.15s ease;
 }
-.advert-cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
-.advert-cta:focus-visible { outline: 2px solid #4FFFE0; outline-offset: 3px; }
-.footer { margin-top: 26px; font-size: 12px; color: #6B6B74; }
+.invite-cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.invite-cta:focus-visible { outline: 2px solid #4FFFE0; outline-offset: 3px; }
+.footer { margin-top: 36px; font-size: 12px; color: #6B6B74; letter-spacing: 0.02em; }
 .footer a { color: #9797A0; text-decoration: none; }
 .footer a:hover { color: #F5F5FA; }
 </style>
 </head>
 <body>
   <main class="card">
-    <div class="badge"><span class="badge-dot"></span> Paused</div>
-    <h1>This site is paused</h1>
-    <p class="lead">The owner has temporarily taken it offline. Check back later.</p>
-    <section class="advert">
-      <div class="advert-eyebrow">Built with HTMLaunch</div>
-      <div class="advert-title">Publish your own site in 60 seconds</div>
-      <div class="advert-sub">Drag, drop, done. Free forever. No credit card, no code.</div>
-      <a class="advert-cta" href="https://htmlaunch.com/">Launch yours &rarr;</a>
+    <div class="status-dot" aria-hidden="true"></div>
+    <h1>This site is currently offline</h1>
+    <p class="lead">The owner has temporarily taken it offline. Please check back later.</p>
+    <section class="invite">
+      <div class="invite-title">Want your own website online in 30 seconds?</div>
+      <a class="invite-cta" href="https://htmlaunch.com/">Try HTMLaunch &rarr;</a>
     </section>
     <div class="footer"><a href="https://htmlaunch.com/">htmlaunch.com</a></div>
   </main>
